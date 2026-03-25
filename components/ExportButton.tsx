@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import type { StyleSettings } from '@/lib/style-settings'
 
 interface ExportButtonProps {
   markdown: string
+  settings: StyleSettings
 }
 
 const ERROR_MESSAGES: Record<number, string> = {
@@ -13,7 +15,7 @@ const ERROR_MESSAGES: Record<number, string> = {
   500: 'Generation failed — try again',
 }
 
-export default function ExportButton({ markdown }: ExportButtonProps) {
+export default function ExportButton({ markdown, settings }: ExportButtonProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -24,7 +26,7 @@ export default function ExportButton({ markdown }: ExportButtonProps) {
       const res = await fetch('/api/generate-pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ markdown }),
+        body: JSON.stringify({ markdown, settings }),
       })
 
       if (!res.ok) {
