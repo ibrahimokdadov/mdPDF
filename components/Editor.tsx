@@ -1,7 +1,5 @@
 'use client'
 
-import MonacoEditor from '@monaco-editor/react'
-
 interface EditorProps {
   value: string
   onChange: (value: string) => void
@@ -9,20 +7,11 @@ interface EditorProps {
 
 export default function Editor({ value, onChange }: EditorProps) {
   return (
-    <MonacoEditor
-      height="100%"
-      language="markdown"
+    <textarea
+      className="w-full h-full resize-none p-4 font-mono text-sm outline-none border-none bg-gray-50"
       value={value}
-      onChange={(v) => onChange(v ?? '')}
-      options={{
-        minimap: { enabled: false },
-        wordWrap: 'on',
-        lineNumbers: 'off',
-        folding: false,
-        fontSize: 14,
-        scrollBeyondLastLine: false,
-      }}
-      theme="vs-light"
+      onChange={(e) => onChange(e.target.value)}
+      spellCheck={false}
     />
   )
 }
