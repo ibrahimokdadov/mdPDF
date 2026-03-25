@@ -67,7 +67,7 @@ export function markdownToHtml(markdown: string, settings: StyleSettings = DEFAU
   const settingsCss = buildSettingsCss(settings)
 
   // Google Fonts @import for selected fonts (Puppeteer has network access)
-  const fontsToLoad = [...new Set([settings.bodyFont, settings.headingFont])]
+  const fontsToLoad = Array.from(new Set([settings.bodyFont, settings.headingFont]))
   const googleFontsImport = fontsToLoad
     .filter(f => !['Arial', 'Helvetica', 'Verdana', 'Trebuchet MS', 'Courier New'].includes(f))
     .map(f => `@import url('https://fonts.googleapis.com/css2?family=${encodeURIComponent(f)}:wght@400;600;700&display=swap');`)
