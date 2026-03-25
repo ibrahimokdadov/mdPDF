@@ -110,25 +110,25 @@ export default function Home() {
 
       {/* Panel labels row */}
       <div className="flex flex-shrink-0" style={{ height: '32px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ width: '260px', minWidth: '40px', borderRight: '1px solid rgba(255,255,255,0.06)', background: 'rgba(15,23,42,0.5)' }} />
         <div className="flex-1 flex items-center px-5" style={{ borderRight: '1px solid rgba(255,255,255,0.06)', background: 'rgba(15,23,42,0.8)' }}>
           <span className="text-[10px] font-medium text-slate-500 uppercase tracking-[0.15em]">Markdown</span>
         </div>
-        <div className="flex-1 flex items-center px-5 bg-white" style={{ borderRight: '1px solid #e2e8f0' }}>
+        <div className="flex-1 flex items-center px-5 bg-white">
           <span className="text-[10px] font-medium text-slate-400 uppercase tracking-[0.15em]">Preview</span>
           <span className="ml-auto text-[9px] text-slate-300 italic">Preview is approximate</span>
         </div>
-        <div style={{ width: '260px', minWidth: '40px' }} />
       </div>
 
       {/* Main panels */}
       <main className="flex flex-1 overflow-hidden">
+        <StyleSidebar settings={settings} onChange={handleSettingsChange} onReset={handleReset} />
         <div className="flex-1 overflow-hidden" style={{ background: '#0d1424', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
           <Editor value={markdown} onChange={setMarkdown} />
         </div>
         <div className="flex-1 overflow-auto bg-white preview-scroll">
           <Preview markdown={markdown} settings={settings} />
         </div>
-        <StyleSidebar settings={settings} onChange={handleSettingsChange} onReset={handleReset} />
       </main>
     </div>
   )
