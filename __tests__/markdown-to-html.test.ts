@@ -55,3 +55,16 @@ describe('markdownToHtml with settings', () => {
     expect(result).toContain('<h1')
   })
 })
+
+describe('markdownToHtml — inline HTML passthrough', () => {
+  it('passes <u> tag through to output', () => {
+    const result = markdownToHtml('hello <u>world</u>')
+    expect(result).toContain('<u>world</u>')
+  })
+
+  it('passes <span style> through to output', () => {
+    const result = markdownToHtml('<span style="color:#ff0000">red</span>')
+    expect(result).toContain('color:#ff0000')
+    expect(result).toContain('red')
+  })
+})

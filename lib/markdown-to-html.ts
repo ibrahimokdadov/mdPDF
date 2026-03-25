@@ -2,6 +2,7 @@ import { unified } from 'unified'
 import remarkParse from 'remark-parse'
 import remarkGfm from 'remark-gfm'
 import remarkRehype from 'remark-rehype'
+import rehypeRaw from 'rehype-raw'
 import rehypeHighlight from 'rehype-highlight'
 import rehypeStringify from 'rehype-stringify'
 import { readFileSync } from 'fs'
@@ -56,7 +57,8 @@ export function markdownToHtml(markdown: string, settings: StyleSettings = DEFAU
   const file = unified()
     .use(remarkParse)
     .use(remarkGfm)
-    .use(remarkRehype)
+    .use(remarkRehype, { allowDangerousHtml: true })
+    .use(rehypeRaw)
     .use(rehypeHighlight)
     .use(rehypeStringify)
     .processSync(markdown)
@@ -66,7 +68,6 @@ export function markdownToHtml(markdown: string, settings: StyleSettings = DEFAU
   const highlightCss = loadCss('highlight.js/styles/github.css')
   const settingsCss = buildSettingsCss(settings)
 
-  // Google Fonts @import for selected fonts (Puppeteer has network access)
   const fontsToLoad = Array.from(new Set([settings.bodyFont, settings.headingFont]))
   const googleFontsImport = fontsToLoad
     .filter(f => !['Arial', 'Helvetica', 'Verdana', 'Trebuchet MS', 'Courier New'].includes(f))
