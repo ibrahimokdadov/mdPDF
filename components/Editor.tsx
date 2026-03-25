@@ -12,6 +12,7 @@ export default function Editor({ value, onChange }: EditorProps) {
       value={value}
       onChange={(e) => onChange(e.target.value)}
       spellCheck={false}
+      dir="auto"
       style={{
         fontFamily: 'var(--font-fira), Menlo, monospace',
         fontSize: '13.5px',

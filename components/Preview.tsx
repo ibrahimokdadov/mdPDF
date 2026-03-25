@@ -11,7 +11,7 @@ interface PreviewProps {
 
 export default function Preview({ markdown }: PreviewProps) {
   return (
-    <div className="markdown-body px-8 py-6" style={{ minHeight: '100%' }}>
+    <div className="markdown-body px-8 py-6" dir="auto" style={{ minHeight: '100%' }}>
       <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
         {markdown}
       </ReactMarkdown>
