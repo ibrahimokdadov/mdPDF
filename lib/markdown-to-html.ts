@@ -26,7 +26,7 @@ export function markdownToHtml(markdown: string): string {
     .processSync(markdown)
 
   const body = String(file)
-  const githubCss = loadCss('github-markdown-css/github-markdown.css')
+  const githubCss = loadCss('github-markdown-css/github-markdown-light.css')
   const highlightCss = loadCss('highlight.js/styles/github.css')
 
   return `<!DOCTYPE html>
@@ -37,6 +37,20 @@ export function markdownToHtml(markdown: string): string {
 body { padding: 2rem; max-width: 900px; margin: 0 auto; }
 ${githubCss}
 ${highlightCss}
+.markdown-body p,
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4,
+.markdown-body h5,
+.markdown-body h6,
+.markdown-body li,
+.markdown-body td,
+.markdown-body th,
+.markdown-body blockquote {
+  unicode-bidi: plaintext;
+  text-align: start;
+}
 </style>
 </head>
 <body>
