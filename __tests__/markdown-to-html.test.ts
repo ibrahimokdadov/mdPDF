@@ -1,4 +1,5 @@
 import { markdownToHtml } from '../lib/markdown-to-html'
+import { DEFAULT_SETTINGS } from '../lib/style-settings'
 
 describe('markdownToHtml', () => {
   it('renders an h1 heading', () => {
@@ -33,5 +34,24 @@ describe('markdownToHtml', () => {
   it('wraps content in markdown-body class', () => {
     const result = markdownToHtml('hello')
     expect(result).toContain('class="markdown-body"')
+  })
+})
+
+describe('markdownToHtml with settings', () => {
+  it('injects custom accent color into PDF HTML', () => {
+    const settings = { ...DEFAULT_SETTINGS, accentColor: '#ff0000' }
+    const result = markdownToHtml('# Hello', settings)
+    expect(result).toContain('#ff0000')
+  })
+
+  it('injects custom body font into PDF HTML', () => {
+    const settings = { ...DEFAULT_SETTINGS, bodyFont: 'Arial' as const }
+    const result = markdownToHtml('hello', settings)
+    expect(result).toContain('Arial')
+  })
+
+  it('works with no settings argument (uses defaults)', () => {
+    const result = markdownToHtml('# Hello')
+    expect(result).toContain('<h1')
   })
 })
