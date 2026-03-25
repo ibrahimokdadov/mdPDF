@@ -6,6 +6,7 @@ import rehypeHighlight from 'rehype-highlight'
 import rehypeRaw from 'rehype-raw'
 import 'highlight.js/styles/github.css'
 import type { StyleSettings } from '@/lib/style-settings'
+import MermaidDiagram from '@/components/MermaidDiagram'
 
 interface PreviewProps {
   markdown: string
@@ -33,6 +34,14 @@ export default function Preview({ markdown, settings }: PreviewProps) {
         remarkPlugins={[remarkGfm]}
         remarkRehypeOptions={{ allowDangerousHtml: true }}
         rehypePlugins={[rehypeRaw, rehypeHighlight]}
+        components={{
+          code({ className, children }) {
+            if (className === 'language-mermaid') {
+              return <MermaidDiagram chart={String(children).trim()} />
+            }
+            return <code className={className}>{children}</code>
+          },
+        }}
       >
         {markdown}
       </ReactMarkdown>
