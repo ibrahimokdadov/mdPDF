@@ -9,6 +9,7 @@ const config: Config = {
       testMatch: [
         '**/__tests__/markdown-to-html.test.ts',
         '**/__tests__/pdf.test.ts',
+        '**/__tests__/format-helpers.test.ts',
       ],
       extensionsToTreatAsEsm: ['.ts'],
       moduleNameMapper: { '^(\\.{1,2}/.*)\\.js$': '$1' },
