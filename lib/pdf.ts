@@ -43,6 +43,18 @@ export async function htmlToPdf(html: string, settings: StyleSettings = DEFAULT_
     const page = await browser.newPage()
     await page.setContent(html, { waitUntil: 'networkidle0', timeout: 30000 })
 
+    // Wait for Mermaid to finish rendering all diagrams (if any present)
+    const hasMermaid = await page.evaluate(() => document.querySelector('.mermaid') !== null)
+    if (hasMermaid) {
+      await page.waitForFunction(
+        () => {
+          const diagrams = document.querySelectorAll('.mermaid')
+          return diagrams.length > 0 && Array.from(diagrams).every(el => el.querySelector('svg') !== null)
+        },
+        { timeout: 15000 }
+      )
+    }
+
     const headerTemplate = buildPuppeteerTemplate(settings.headerText, settings.showHeaderLine)
     const footerTemplate = buildPuppeteerTemplate(settings.footerText, settings.showFooterLine)
     const hasHeaderFooter = !!(settings.headerText || settings.footerText)
