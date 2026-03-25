@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# mdPDF
 
-## Getting Started
+Write Markdown, get a styled PDF. Live preview, custom typography, and Mermaid diagram support — no LaTeX, no install.
 
-First, run the development server:
+**Live:** https://mdpdf.whhite.com
+
+---
+
+## Features
+
+- **Live preview** — see your formatted document as you type
+- **Mermaid diagrams** — flowcharts, sequence diagrams, ER diagrams render in both preview and PDF export
+- **Style sidebar** — fonts, colors, line height, margins, header/footer text
+- **Format toolbar** — select text and apply Bold, Italic, Underline, Strikethrough, Text Color, Highlight, Font Family, Font Size
+- **PDF export** — Puppeteer renders the same output you see in the preview
+- **File upload** — drag in any `.md` file
+
+## Mermaid example
+
+````markdown
+```mermaid
+graph TD
+  A[User] --> B[API Gateway]
+  B --> C[Auth Service]
+  B --> D[Data Service]
+  D --> E[(Database)]
+```
+````
+
+The diagram renders live in the preview and exports correctly to PDF.
+
+## Self-hosting
+
+Requires Docker (Chromium included in the image).
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/ibrahimokdadov/mdPDF
+cd mdPDF
+docker build -t mdpdf .
+docker run -p 3000:3000 mdpdf
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Development
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+npm run dev
+```
 
-## Learn More
+Open http://localhost:3000.
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm test        # run tests
+npm run build   # production build
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Stack
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Next.js 14, TypeScript, Tailwind CSS, Puppeteer, rehype, Mermaid
