@@ -5,8 +5,11 @@ import Editor from '@/components/Editor'
 import Preview from '@/components/Preview'
 import ExportButton from '@/components/ExportButton'
 import StyleSidebar from '@/components/StyleSidebar'
+import FormatToolbar from '@/components/FormatToolbar'
 import { loadSettings, saveSettings, DEFAULT_SETTINGS } from '@/lib/style-settings'
 import type { StyleSettings } from '@/lib/style-settings'
+import { wrap } from '@/lib/format-helpers'
+import type { FormatType } from '@/lib/format-helpers'
 
 const DEFAULT_MARKDOWN = `# Welcome to mdPDF
 
@@ -33,6 +36,7 @@ function greet(name: string): string {
 | PDF export    | ✅ Done  |
 | File upload   | ✅ Done  |
 | Style sidebar | ✅ Done  |
+| Format toolbar| ✅ Done  |
 
 ## Task list
 
@@ -46,9 +50,10 @@ function greet(name: string): string {
 export default function Home() {
   const [markdown, setMarkdown] = useState(DEFAULT_MARKDOWN)
   const [settings, setSettings] = useState<StyleSettings>(DEFAULT_SETTINGS)
+  const [selection, setSelection] = useState({ selectionStart: 0, selectionEnd: 0 })
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  // Load persisted settings on mount
   useEffect(() => {
     setSettings(loadSettings())
   }, [])
@@ -64,6 +69,27 @@ export default function Home() {
   function handleReset() {
     saveSettings(DEFAULT_SETTINGS)
     setSettings(DEFAULT_SETTINGS)
+  }
+
+  function handleSelect(selectionStart: number, selectionEnd: number) {
+    setSelection({ selectionStart, selectionEnd })
+  }
+
+  function applyFormat(type: FormatType, value?: string) {
+    const { selectionStart: start, selectionEnd: end } = selection
+    const selected = markdown.slice(start, end)
+    if (!selected) return
+
+    const wrapped = wrap(type, selected, value)
+    const newPos = start + wrapped.length
+
+    setMarkdown(markdown.slice(0, start) + wrapped + markdown.slice(end))
+    setSelection({ selectionStart: newPos, selectionEnd: newPos })
+
+    requestAnimationFrame(() => {
+      textareaRef.current?.focus()
+      textareaRef.current?.setSelectionRange(newPos, newPos)
+    })
   }
 
   function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -123,8 +149,18 @@ export default function Home() {
       {/* Main panels */}
       <main className="flex flex-1 overflow-hidden">
         <StyleSidebar settings={settings} onChange={handleSettingsChange} onReset={handleReset} />
-        <div className="flex-1 overflow-hidden" style={{ background: '#0d1424', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
-          <Editor value={markdown} onChange={setMarkdown} />
+        {/* Editor column */}
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ background: '#0d1424', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
+          <FormatToolbar
+            hasSelection={selection.selectionStart !== selection.selectionEnd}
+            onFormat={applyFormat}
+          />
+          <Editor
+            value={markdown}
+            onChange={setMarkdown}
+            textareaRef={textareaRef}
+            onSelect={handleSelect}
+          />
         </div>
         <div className="flex-1 overflow-auto bg-white preview-scroll">
           <Preview markdown={markdown} settings={settings} />

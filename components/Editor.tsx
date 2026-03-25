@@ -3,14 +3,21 @@
 interface EditorProps {
   value: string
   onChange: (value: string) => void
+  textareaRef: React.RefObject<HTMLTextAreaElement>
+  onSelect: (start: number, end: number) => void
 }
 
-export default function Editor({ value, onChange }: EditorProps) {
+export default function Editor({ value, onChange, textareaRef, onSelect }: EditorProps) {
   return (
     <textarea
+      ref={textareaRef}
       className="w-full h-full resize-none outline-none border-none bg-transparent leading-relaxed editor-scroll"
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      onSelect={(e) => {
+        const t = e.currentTarget
+        onSelect(t.selectionStart, t.selectionEnd)
+      }}
       spellCheck={false}
       dir="auto"
       style={{
