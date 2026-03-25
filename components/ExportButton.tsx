@@ -8,9 +8,9 @@ interface ExportButtonProps {
 
 const ERROR_MESSAGES: Record<number, string> = {
   400: 'Nothing to export',
-  413: 'Document too large to export',
-  504: 'PDF generation timed out — try again',
-  500: 'PDF generation failed — try again',
+  413: 'Document too large',
+  504: 'Timed out — try again',
+  500: 'Generation failed — try again',
 }
 
 export default function ExportButton({ markdown }: ExportButtonProps) {
@@ -29,7 +29,7 @@ export default function ExportButton({ markdown }: ExportButtonProps) {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
-        setError(data.error ?? ERROR_MESSAGES[res.status] ?? 'Export failed — check your connection')
+        setError(data.error ?? ERROR_MESSAGES[res.status] ?? 'Export failed')
         return
       }
 
@@ -48,21 +48,39 @@ export default function ExportButton({ markdown }: ExportButtonProps) {
   }
 
   return (
-    <div className="flex flex-col items-end gap-1">
+    <div className="flex flex-col items-end gap-1.5">
       <button
         onClick={handleExport}
         disabled={loading}
-        className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+        className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-semibold text-white rounded-md transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
+        style={{
+          background: loading
+            ? 'rgba(99,102,241,0.7)'
+            : 'linear-gradient(135deg, #6366f1, #8b5cf6)',
+          boxShadow: loading ? 'none' : '0 1px 2px rgba(99,102,241,0.4), inset 0 1px 0 rgba(255,255,255,0.1)',
+          letterSpacing: '0.01em',
+        }}
       >
-        {loading && (
-          <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-          </svg>
+        {loading ? (
+          <>
+            <svg className="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
+              <path className="opacity-80" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+            </svg>
+            Generating…
+          </>
+        ) : (
+          <>
+            <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            Export PDF
+          </>
         )}
-        {loading ? 'Generating…' : 'Export PDF'}
       </button>
-      {error && <span className="text-red-500 text-xs">{error}</span>}
+      {error && (
+        <span className="text-[11px] text-red-400 font-medium">{error}</span>
+      )}
     </div>
   )
 }
