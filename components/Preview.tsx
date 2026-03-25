@@ -18,12 +18,15 @@ export default function Preview({ markdown, settings }: PreviewProps) {
       dir="auto"
       style={{
         minHeight: '100%',
-        fontFamily: `'${settings.bodyFont}', serif`,
-        fontSize: `${settings.baseFontSize}px`,
-        lineHeight: settings.lineHeight,
-        color: settings.textColor,
-        backgroundColor: settings.backgroundColor,
-      }}
+        '--md-body-font': `'${settings.bodyFont}', serif`,
+        '--md-heading-font': `'${settings.headingFont}', serif`,
+        '--md-font-size': `${settings.baseFontSize}px`,
+        '--md-line-height': String(settings.lineHeight),
+        '--md-text-color': settings.textColor,
+        '--md-accent-color': settings.accentColor,
+        '--md-link-color': settings.linkColor,
+        '--md-bg-color': settings.backgroundColor,
+      } as React.CSSProperties}
     >
       <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]}>
         {markdown}
