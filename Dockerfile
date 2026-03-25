@@ -22,17 +22,21 @@ RUN apt-get update && apt-get install -y \
   --no-install-recommends && \
   rm -rf /var/lib/apt/lists/*
 
-# Tell Puppeteer to use system Chromium, skip downloading its own
+# Tell Puppeteer to use system Chromium
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
 WORKDIR /app
 
 COPY package*.json ./
-RUN npm ci --omit=dev
+# Install all deps (including devDeps) so Next.js build works
+RUN npm ci
 
 COPY . .
 RUN npm run build
+
+# Prune devDependencies after build
+RUN npm prune --omit=dev
 
 ENV NODE_ENV=production
 ENV PORT=3000
