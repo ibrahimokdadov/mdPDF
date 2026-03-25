@@ -5,6 +5,7 @@ import remarkRehype from 'remark-rehype'
 import rehypeRaw from 'rehype-raw'
 import rehypeHighlight from 'rehype-highlight'
 import rehypeStringify from 'rehype-stringify'
+import { visit } from 'unist-util-visit'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import type { StyleSettings } from './style-settings'
@@ -53,12 +54,36 @@ body {
 `
 }
 
+// Rehype plugin: transforms <pre><code class="language-mermaid"> into <div class="mermaid">
+function rehypeMermaid() {
+  return (tree: any) => {
+    visit(tree, 'element', (node: any, index: number | undefined, parent: any) => {
+      if (
+        node.tagName === 'pre' &&
+        node.children?.[0]?.tagName === 'code' &&
+        node.children[0].properties?.className?.includes('language-mermaid') &&
+        index !== undefined &&
+        parent
+      ) {
+        const code = node.children[0].children?.[0]?.value ?? ''
+        parent.children[index] = {
+          type: 'element',
+          tagName: 'div',
+          properties: { className: ['mermaid'] },
+          children: [{ type: 'text', value: code }],
+        }
+      }
+    })
+  }
+}
+
 export function markdownToHtml(markdown: string, settings: StyleSettings = DEFAULT_SETTINGS): string {
   const file = unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkRehype, { allowDangerousHtml: true })
     .use(rehypeRaw)
+    .use(rehypeMermaid)
     .use(rehypeHighlight)
     .use(rehypeStringify)
     .processSync(markdown)
@@ -104,6 +129,8 @@ ${settingsCss}
 <div class="markdown-body">
 ${body}
 </div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, theme: 'default' });</script>
 </body>
 </html>`
 }

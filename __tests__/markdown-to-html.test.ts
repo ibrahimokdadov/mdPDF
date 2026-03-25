@@ -56,6 +56,26 @@ describe('markdownToHtml with settings', () => {
   })
 })
 
+describe('markdownToHtml — Mermaid', () => {
+  it('transforms mermaid code block into <div class="mermaid">', () => {
+    const result = markdownToHtml('```mermaid\ngraph TD\n  A --> B\n```')
+    expect(result).toContain('<div class="mermaid">')
+    expect(result).toContain('graph TD')
+  })
+
+  it('injects mermaid script tag into HTML output', () => {
+    const result = markdownToHtml('```mermaid\ngraph TD\n  A --> B\n```')
+    expect(result).toContain('mermaid')
+    expect(result).toContain('<script')
+  })
+
+  it('does not transform non-mermaid code blocks', () => {
+    const result = markdownToHtml('```typescript\nconst x = 1\n```')
+    expect(result).not.toContain('<div class="mermaid">')
+    expect(result).toContain('language-typescript')
+  })
+})
+
 describe('markdownToHtml — inline HTML passthrough', () => {
   it('passes <u> tag through to output', () => {
     const result = markdownToHtml('hello <u>world</u>')
