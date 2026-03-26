@@ -75,6 +75,21 @@ export default function Home() {
     setSelection({ selectionStart, selectionEnd })
   }
 
+  function insertSnippet(text: string) {
+    const pos = selection.selectionStart
+    const before = markdown.slice(0, pos)
+    const after = markdown.slice(pos)
+    const snippet = '\n\n' + text + '\n\n'
+    const newMarkdown = before + snippet + after
+    const newPos = pos + snippet.length
+    setMarkdown(newMarkdown)
+    setSelection({ selectionStart: newPos, selectionEnd: newPos })
+    requestAnimationFrame(() => {
+      textareaRef.current?.focus()
+      textareaRef.current?.setSelectionRange(newPos, newPos)
+    })
+  }
+
   function applyFormat(type: FormatType, value?: string) {
     const { selectionStart: start, selectionEnd: end } = selection
     const selected = markdown.slice(start, end)
@@ -154,6 +169,7 @@ export default function Home() {
           <FormatToolbar
             hasSelection={selection.selectionStart !== selection.selectionEnd}
             onFormat={applyFormat}
+            onInsert={insertSnippet}
           />
           <Editor
             value={markdown}

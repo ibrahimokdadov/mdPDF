@@ -1,6 +1,6 @@
 # mdPDF
 
-Write Markdown, get a styled PDF. Live preview, custom typography, and Mermaid diagram support — no LaTeX, no install.
+Write Markdown, get a styled PDF. Live preview, custom typography, Mermaid diagrams, and a one-click diagram inserter — no LaTeX, no install.
 
 **Live:** https://mdpdf.whhite.com
 
@@ -9,21 +9,36 @@ Write Markdown, get a styled PDF. Live preview, custom typography, and Mermaid d
 ## Features
 
 - **Live preview** — see your formatted document as you type
-- **Mermaid diagrams** — flowcharts, sequence diagrams, ER diagrams render in both preview and PDF export
+- **Mermaid diagrams** — flowcharts, sequence diagrams, ER diagrams, Gantt charts, pie charts, and more render in both preview and PDF export
+- **Diagram inserter** — click "Diagram" in the toolbar, pick a type, template inserts at cursor
 - **Style sidebar** — fonts, colors, line height, margins, header/footer text
 - **Format toolbar** — select text and apply Bold, Italic, Underline, Strikethrough, Text Color, Highlight, Font Family, Font Size
-- **PDF export** — Puppeteer renders the same output you see in the preview
+- **PDF export** — Puppeteer renders the same output you see in the preview, including diagrams
 - **File upload** — drag in any `.md` file
+
+## Supported diagram types
+
+| Type | Syntax |
+|------|--------|
+| Flowchart | `graph TD` |
+| Sequence diagram | `sequenceDiagram` |
+| ER diagram | `erDiagram` |
+| State machine | `stateDiagram-v2` |
+| Gantt chart | `gantt` |
+| Pie chart | `pie` |
+| Class diagram | `classDiagram` |
+| Git graph | `gitGraph` |
+| Mind map | `mindmap` |
 
 ## Mermaid example
 
 ````markdown
 ```mermaid
-graph TD
-  A[User] --> B[API Gateway]
-  B --> C[Auth Service]
-  B --> D[Data Service]
-  D --> E[(Database)]
+sequenceDiagram
+  User->>API: POST /export
+  API->>Puppeteer: render HTML
+  Puppeteer-->>API: PDF buffer
+  API-->>User: download
 ```
 ````
 

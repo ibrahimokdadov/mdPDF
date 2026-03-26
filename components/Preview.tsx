@@ -33,13 +33,20 @@ export default function Preview({ markdown, settings }: PreviewProps) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         remarkRehypeOptions={{ allowDangerousHtml: true }}
-        rehypePlugins={[rehypeRaw, rehypeHighlight]}
+        rehypePlugins={[rehypeRaw, [rehypeHighlight, { ignoreMissing: true }]]}
         components={{
-          code({ className, children }) {
-            if (className === 'language-mermaid') {
-              return <MermaidDiagram chart={String(children).trim()} />
+          pre({ node, children, ...props }) {
+            // Inspect the hast node directly to find a mermaid code child
+            const codeChild = (node?.children ?? []).find(
+              (c: any) => c.type === 'element' && c.tagName === 'code'
+            ) as any
+            const classes: string[] = codeChild?.properties?.className ?? []
+            if (classes.includes('language-mermaid')) {
+              const textNode = codeChild.children?.find((c: any) => c.type === 'text')
+              const chart = textNode?.value ?? ''
+              return <MermaidDiagram chart={chart.trim()} />
             }
-            return <code className={className}>{children}</code>
+            return <pre {...props}>{children}</pre>
           },
         }}
       >
