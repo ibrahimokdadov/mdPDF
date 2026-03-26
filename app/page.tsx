@@ -49,14 +49,56 @@ function greet(name: string): string {
 
 export default function Home() {
   const [markdown, setMarkdown] = useState(DEFAULT_MARKDOWN)
+  const [past, setPast] = useState<string[]>([])
   const [settings, setSettings] = useState<StyleSettings>(DEFAULT_SETTINGS)
   const [selection, setSelection] = useState({ selectionStart: 0, selectionEnd: 0 })
   const fileInputRef = useRef<HTMLInputElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const historySnapshotRef = useRef(DEFAULT_MARKDOWN)
 
   useEffect(() => {
     setSettings(loadSettings())
   }, [])
+
+  function pushHistory(snapshot: string) {
+    setPast(prev => [...prev, snapshot])
+  }
+
+  function handleMarkdownChange(value: string) {
+    if (!debounceRef.current) {
+      historySnapshotRef.current = markdown
+    } else {
+      clearTimeout(debounceRef.current)
+    }
+    setMarkdown(value)
+    debounceRef.current = setTimeout(() => {
+      pushHistory(historySnapshotRef.current)
+      debounceRef.current = null
+    }, 500)
+  }
+
+  function beforeProgrammaticChange() {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
+      debounceRef.current = null
+      pushHistory(historySnapshotRef.current)
+    }
+    pushHistory(markdown)
+  }
+
+  function handleUndo() {
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current)
+      debounceRef.current = null
+      setMarkdown(historySnapshotRef.current)
+      return
+    }
+    if (past.length === 0) return
+    const restored = past[past.length - 1]
+    setPast(prev => prev.slice(0, -1))
+    setMarkdown(restored)
+  }
 
   function handleSettingsChange(patch: Partial<StyleSettings>) {
     setSettings(prev => {
@@ -76,6 +118,7 @@ export default function Home() {
   }
 
   function insertSnippet(text: string) {
+    beforeProgrammaticChange()
     const pos = selection.selectionStart
     const before = markdown.slice(0, pos)
     const after = markdown.slice(pos)
@@ -94,6 +137,7 @@ export default function Home() {
     const { selectionStart: start, selectionEnd: end } = selection
     const selected = markdown.slice(start, end)
     if (!selected) return
+    beforeProgrammaticChange()
 
     const wrapped = wrap(type, selected, value)
     const newPos = start + wrapped.length
@@ -110,6 +154,7 @@ export default function Home() {
   function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
+    beforeProgrammaticChange()
     const reader = new FileReader()
     reader.onload = (ev) => setMarkdown(ev.target?.result as string)
     reader.readAsText(file)
@@ -170,10 +215,12 @@ export default function Home() {
             hasSelection={selection.selectionStart !== selection.selectionEnd}
             onFormat={applyFormat}
             onInsert={insertSnippet}
+            canUndo={past.length > 0 || debounceRef.current !== null}
+            onUndo={handleUndo}
           />
           <Editor
             value={markdown}
-            onChange={setMarkdown}
+            onChange={handleMarkdownChange}
             textareaRef={textareaRef}
             onSelect={handleSelect}
           />

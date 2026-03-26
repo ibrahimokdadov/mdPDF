@@ -9,6 +9,8 @@ interface FormatToolbarProps {
   hasSelection: boolean
   onFormat: (type: FormatType, value?: string) => void
   onInsert: (text: string) => void
+  canUndo: boolean
+  onUndo: () => void
 }
 
 const FONT_SIZES = ['10', '12', '14', '16', '18', '20', '24', '28', '32', '36']
@@ -25,7 +27,7 @@ const DIAGRAM_TEMPLATES: { label: string; template: string }[] = [
   { label: 'Mind Map', template: '```mermaid\nmindmap\n  root((Topic))\n    Subtopic A\n      Detail 1\n      Detail 2\n    Subtopic B\n      Detail 3\n```' },
 ]
 
-export default function FormatToolbar({ hasSelection, onFormat, onInsert }: FormatToolbarProps) {
+export default function FormatToolbar({ hasSelection, onFormat, onInsert, canUndo, onUndo }: FormatToolbarProps) {
   const [showTextColor, setShowTextColor] = useState(false)
   const [showHighlight, setShowHighlight] = useState(false)
   const [showDiagrams, setShowDiagrams] = useState(false)
@@ -52,6 +54,20 @@ export default function FormatToolbar({ hasSelection, onFormat, onInsert }: Form
         borderBottom: '1px solid rgba(255,255,255,0.06)',
       }}
     >
+      {/* Undo */}
+      <button
+        className={`flex items-center justify-center w-7 h-7 rounded text-slate-400 transition-colors ${!canUndo ? 'opacity-40 pointer-events-none' : 'hover:text-slate-100 hover:bg-slate-800'}`}
+        onMouseDown={(e) => { e.preventDefault(); onUndo() }}
+        title="Undo"
+      >
+        <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h10a5 5 0 010 10H9m-6-10l4-4M3 10l4 4" />
+        </svg>
+      </button>
+
+      {/* Divider */}
+      <div className="w-px h-4 bg-white/10 mx-1" />
+
       {/* Bold */}
       <button className={btnCls} onMouseDown={md('bold')} title="Bold">
         <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h8a4 4 0 010 8H6V4zm0 8h9a4 4 0 010 8H6v-8z"/></svg>
